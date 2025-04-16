@@ -10,15 +10,29 @@ BINANCE_API_URL = "https://api.binance.com/api/v1/klines"
 def get_top_futures_symbols(limit=20):
     url = 'https://fapi.binance.com/fapi/v1/ticker/24hr'
     response = requests.get(url)
-    data = response.json()
-    sorted_data = sorted(data, key=lambda x: float(x['quoteVolume']), reverse=True)
-    top_symbols = []
-    for item in sorted_data:
-        if item['symbol'].endswith('USDT') and 'PERP' not in item['symbol']:
-            top_symbols.append(item['symbol'])
-        if len(top_symbols) >= limit:
-            break
-    return top_symbols
+
+    try:
+        data = response.json()
+        if not isinstance(data, list):
+            st.error(f"Unexpected response format from Binance API: {data}")
+            return []
+
+        # Sort by quote volume descending
+        sorted_data = sorted(data, key=lambda x: float(x['quoteVolume']), reverse=True)
+
+        top_symbols = []
+        for item in sorted_data:
+            if item['symbol'].endswith('USDT') and 'PERP' not in item['symbol']:
+                top_symbols.append(item['symbol'])
+            if len(top_symbols) >= limit:
+                break
+
+        return top_symbols
+
+    except Exception as e:
+        st.error(f"Failed to fetch or parse Binance futures data: {e}")
+        return []
+
 
 
 # Example list of contracts (replace with live data if needed)
