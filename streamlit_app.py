@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time
 import streamlit as st
+import os
 
 # Binance API endpoint
 BINANCE_API_URL = "https://api.binance.com/api/v1/klines"
@@ -38,28 +39,13 @@ def get_top_futures_symbols(limit=20):
 # Example list of contracts (replace with live data if needed)
 CONTRACTS = get_top_futures_symbols()
 
-def fetch_ohlcv(symbol, days=30):
-    end_time = int(time.time())
-    start_time = end_time - (days * 24 * 60 * 60)
+def fetch_ohlcv(symbol, data_folder="data"):
+    file_path = os.path.join(data_folder, f"{symbol}.csv")
+    if not os.path.exists(file_path):
+        st.warning(f"No data found for {symbol}")
+        return pd.DataFrame()
 
-    params = {
-        "symbol": symbol,
-        "interval": "1d",
-        "startTime": start_time * 1000,
-        "endTime": end_time * 1000
-    }
-
-    response = requests.get(BINANCE_API_URL, params=params)
-    ohlcv_data = response.json()
-
-    df = pd.DataFrame(ohlcv_data, columns=[
-        "timestamp", "open", "high", "low", "close", "volume", "close_time",
-        "quote_asset_volume", "number_of_trades", "taker_buy_base_asset_volume",
-        "taker_buy_quote_asset_volume", "ignore"
-    ])
-    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
-    df["volume"] = df["volume"].astype(float)
-    df["quote_asset_volume"] = df["quote_asset_volume"].astype(float)
+    df = pd.read_csv(file_path, parse_dates=["timestamp"])
     return df
 
 def detect_volume_spikes(df, threshold_factor=2):
