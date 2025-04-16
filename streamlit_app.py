@@ -86,7 +86,7 @@ all_spike_data = {}
 
 with st.spinner("Analyzing contracts for volume spikes..."):
     for contract in CONTRACTS:
-        df = fetch_ohlcv(contract, days=30)
+        df = fetch_ohlcv(contract)
         spikes_df = detect_volume_spikes(df, threshold_factor=2.2)
 
         if not spikes_df.empty:
@@ -113,4 +113,3 @@ if spike_summary:
 
 else:
     st.warning("No volume spikes over 100M found for any contract.")
-
