@@ -37,7 +37,7 @@ def get_top_futures_symbols(limit=20):
 
 
 # Example list of contracts (replace with live data if needed)
-CONTRACTS = get_top_futures_symbols()
+CONTRACTS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT','1000PEPEUSDT','ADAUSDT','BABYUSDT','BNBUSDT','BNXUSDT','DOGEUSDT','ENAUDST','FARTCOINUSDT','GASUSDT','KERNELUSDT','LINKUSDT','OMUSDT','ORCAUSDT','SUIUSDT','TRUMPUSDT','WCTUSDT']
 
 def fetch_ohlcv(symbol, data_folder="data"):
     file_path = os.path.join(data_folder, f"{symbol}.csv")
